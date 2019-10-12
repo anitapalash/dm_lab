@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
-
+<?import javafx.scene.text.Font?>
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="399.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="hse.dm_lab.controller.MenuController">
   <children>
     <GridPane prefHeight="400.0" prefWidth="399.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -25,9 +21,9 @@
             <Insets top="40.0" />
           </GridPane.margin>
         </Label>
-        <Button mnemonicParsing="false" prefHeight="53.0" prefWidth="160.0" text="Удалить базу данных" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-        <Button mnemonicParsing="false" prefHeight="46.0" prefWidth="160.0" text="Открыть базу данных" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-        <Button mnemonicParsing="false" prefHeight="46.0" prefWidth="181.0" text="Создать новую базу данных" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+        <Button fx:id="deleteDBButton" mnemonicParsing="false" onAction="#deleteDB" prefHeight="53.0" prefWidth="160.0" text="Удалить базу данных" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+        <Button fx:id="openDBButton" mnemonicParsing="false" onAction="#selectAll" prefHeight="46.0" prefWidth="160.0" text="Открыть базу данных" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+        <Button fx:id="newDBButton" mnemonicParsing="false" onAction="#initDB" prefHeight="46.0" prefWidth="181.0" text="Создать новую базу данных" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
       </children>
       <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
