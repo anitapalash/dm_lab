@@ -1,5 +1,6 @@
 package hse.dm_lab;
 
+import hse.dm_lab.util.DBManipulator;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainApplication extends Application {
+
+    public static DBManipulator manipulator;
 
     public static void main(String[] args) throws Exception {
         launch(args);

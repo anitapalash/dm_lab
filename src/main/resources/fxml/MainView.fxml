@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="496.0" prefWidth="743.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="hse.dm_lab.controller.MainViewController">
+  <children>
+    <GridPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+        <TableView prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+          <columns>
+            <TableColumn editable="false" prefWidth="40.0" text="№" fx:id="idColumn" />
+            <TableColumn editable="false" prefWidth="350.0" text="ФИО" fx:id="fioColumn" />
+            <TableColumn editable="false" prefWidth="115.0" text="Пол" fx:id="sexColumn" />
+            <TableColumn editable="false" prefWidth="150.0" text="Количество заявок" fx:id="claimColumn" />
+          </columns>
+        </TableView>
+        <GridPane GridPane.columnIndex="0" GridPane.rowIndex="0">
+          <children>
+            <Button id="insert" fx:id="insertButton" mnemonicParsing="false" onAction="#insert" text="Добавить запись" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER">
+              <font>
+                <Font size="14.0" fx:id="x1" />
+              </font>
+            </Button>
+            <Button fx:id="deleteButton" font="$x1" mnemonicParsing="false" onAction="#delete" text="Удалить запись" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+            <Button fx:id="searchButon" font="$x1" mnemonicParsing="false" onAction="#search" text="Поиск" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+            <Button fx:id="editButton" font="$x1" mnemonicParsing="false" onAction="#editDB" text="Редактировать записи" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+          </children>
+          <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          </rowConstraints>
+        </GridPane>
+        <GridPane GridPane.columnIndex="0" GridPane.rowIndex="2">
+          <children>
+            <Button fx:id="createBackupButton" font="$x1" mnemonicParsing="false" onAction="#backupDB" text="Создание backup файла" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+            <Button fx:id="fromBackupButton" mnemonicParsing="false" onAction="#recoverFromBackup" text="Восстановить данные из backup файла" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+            <Button fx:id="importDataButton" font="$x1" mnemonicParsing="false" onAction="#importData" text="Импортировать данные" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+          </children>
+          <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          </rowConstraints>
+        </GridPane>
+      </children>
+      <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      </columnConstraints>
+      <rowConstraints>
+        <RowConstraints maxHeight="200.0" minHeight="10.0" prefHeight="112.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="342.0" minHeight="10.0" prefHeight="327.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="319.0" minHeight="10.0" prefHeight="57.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+    </GridPane>
+  </children>
+</AnchorPane>
