@@ -1,10 +1,20 @@
 package hse.dm_lab.controller;
 
+import hse.dm_lab.MainApplication;
+import hse.dm_lab.model.Item;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -17,7 +27,10 @@ public class MainViewController {
     private URL location;
 
     @FXML
-    private TableColumn<?, ?> claimColumn;
+    private TableColumn<Item, String> claimColumn;
+
+    @FXML
+    private TableView<Item> mainTable;
 
     @FXML
     private Button createBackupButton;
@@ -29,13 +42,13 @@ public class MainViewController {
     private Button editButton;
 
     @FXML
-    private TableColumn<?, ?> fioColumn;
+    private TableColumn<Item, String> fioColumn;
 
     @FXML
     private Button fromBackupButton;
 
     @FXML
-    private TableColumn<?, ?> idColumn;
+    private TableColumn<Item, String> idColumn;
 
     @FXML
     private Button importDataButton;
@@ -47,8 +60,10 @@ public class MainViewController {
     private Button searchButon;
 
     @FXML
-    private TableColumn<?, ?> sexColumn;
+    private TableColumn<Item, String> sexColumn;
 
+    @FXML
+    private TableColumn<Item, String> roleColumn;
 
     @FXML
     void backupDB(ActionEvent event) {
@@ -67,7 +82,13 @@ public class MainViewController {
     }
 
     @FXML
-    void insert(ActionEvent event) {
+    void insert(ActionEvent event) throws IOException {
+        Stage stage = new Stage();
+        Pane pane = FXMLLoader.load(MenuController.class.getResource("/fxml/InsertView.fxml"));
+        Scene scene = new Scene(pane);
+        stage.setScene(scene);
+        stage.setTitle("Palashinovich File Database");
+        stage.showAndWait();
     }
 
     @FXML
@@ -91,6 +112,14 @@ public class MainViewController {
         assert insertButton != null : "fx:id=\"insertButton\" was not injected: check your FXML file 'MainView.fxml'.";
         assert searchButon != null : "fx:id=\"searchButon\" was not injected: check your FXML file 'MainView.fxml'.";
         assert sexColumn != null : "fx:id=\"sexColumn\" was not injected: check your FXML file 'MainView.fxml'.";
+        ObservableList<Item> items = (ObservableList<Item>) MainApplication.manipulator.showAll();
+        idColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("id"));
+        fioColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("fio"));
+        sexColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("sex"));
+        claimColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("claimCount"));
+        roleColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("role"));
+        mainTable.setItems(items);
+        mainTable.getColumns().addAll(idColumn, fioColumn, sexColumn, claimColumn, roleColumn);
     }
 
 }
