@@ -17,6 +17,10 @@ public class Item {
         this.role = role;
     }
 
+    public Item(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }

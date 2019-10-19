@@ -29,7 +29,12 @@ public class MenuController {
         assert deleteDBButton != null : "fx:id=\"deleteDBButton\" was not injected: check your FXML file 'Menu.fxml'.";
         assert newDBButton != null : "fx:id=\"newDBButton\" was not injected: check your FXML file 'Menu.fxml'.";
         assert openDBButton != null : "fx:id=\"openDBButton\" was not injected: check your FXML file 'Menu.fxml'.";
-        MainApplication.manipulator = new DBManipulator();
+        try {
+            MainApplication.manipulator = new DBManipulator();
+        } catch (IOException e) {
+            System.out.println("Error creating database manipulator");
+            System.out.println("Cause: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -49,7 +54,12 @@ public class MenuController {
 
     @FXML
     void initDB(ActionEvent event) {
-        MainApplication.manipulator = new DBManipulator();
+        try {
+            MainApplication.manipulator = new DBManipulator();
+        } catch (IOException e) {
+            System.out.println("Error creating database manipulator");
+            System.out.println("Cause: " + e.getMessage());
+        }
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Успех");
         alert.setHeaderText("Успех");
