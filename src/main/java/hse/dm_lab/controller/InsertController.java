@@ -56,23 +56,24 @@ public class InsertController {
             alert.setHeaderText("Ошибка");
             alert.setContentText("Не заполнена роль. Будет присвоена роль Пользователь");
             alert.showAndWait();
-            item.setRole('U');
+            item.setRole("Пользователь");
         } else {
             switch (roleTextField.getText()) {
                 case "Админ":
                 case "Администратор":
-                    item.setRole('A');
+                    item.setRole("Администратор");
                     break;
                 case "Аналитик":
-                    item.setRole('N');
+                    item.setRole("Аналитик");
                     break;
                 case "Юзер":
                 case "Пользователь":
-                    item.setRole('U');
+                    item.setRole("Пользователь");
                     break;
                 case "Дев":
                 case "Девелопер":
-                    item.setRole('D');
+                case "Разработчик":
+                    item.setRole("Разработчик");
                     break;
                 default:
                     Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -105,12 +106,7 @@ public class InsertController {
         }
 
         //sex field
-        String sex = ((ToggleButton)toggleGroup.getSelectedToggle()).getText();
-        if (sex.equals("Мужской")) {
-            item.setSex(true);
-        } else {
-            item.setSex(false);
-        }
+        item.setSex(((ToggleButton)toggleGroup.getSelectedToggle()).getText());
 
         MainApplication.manipulator.saveToDB(item);
         System.out.println("Added new line: " + item.getFio());
