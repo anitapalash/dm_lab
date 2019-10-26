@@ -4,6 +4,7 @@ import hse.dm_lab.model.Item;
 import javafx.scene.control.Alert;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +14,6 @@ import java.util.List;
 
 public class DBManipulator {
     private static final String PATH = "src/main/resources/db/database.txt";
-    private BufferedWriter writer = new BufferedWriter(new FileWriter(PATH, true));
 
     public DBManipulator() throws IOException {
         try {
@@ -59,9 +59,10 @@ public class DBManipulator {
     }
 
     public List<Item> showAll() {
+        URL url = getClass().getResource("/db/database.txt");
         try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
             List<Item> items = new ArrayList<>();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new InputStream(String.valueOf(DBManipulator.class.getResourceAsStream("/db/database.txt")))));
             String currentLine;
             while((currentLine = reader.readLine()) != null) {
                 String[] fields = currentLine.split("\\|");
@@ -88,11 +89,9 @@ public class DBManipulator {
 
     public void saveToDB(Item item) {
         try {
-            List<Item> items = showAll();
-            for (Item i : items) {
-                if (i.getId().equals(item.getId())) {
-                    throw new Exception("Запись с таким идентификатором уже существует");
-                }
+            BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(PATH, true)));
+            if (getItem(item.getId()) != null) {
+                throw new Exception("Элемент с таким идентификатором уже существует");
             }
             StringBuilder sb = new StringBuilder("");
             sb.append(item.getId());
@@ -106,6 +105,8 @@ public class DBManipulator {
             sb.append(item.getRole());
             sb.append("\n");
             writer.write(sb.toString());
+            writer.flush();
+            writer.close();
         } catch (Exception e) {
             System.out.println("Произошла ошибка при записи в базу данных");
             System.out.println("Cause: " + e.getMessage());
@@ -123,17 +124,39 @@ public class DBManipulator {
         }
     }
 
-    public Integer getNewId() {
-        List<Item> allItems = showAll();
-        allItems.sort(new IdComparator());
-        Item item = allItems.get(allItems.size() - 1);
-        return item.getId() + 1;
+    public Item getItem(Integer id) {
+        List<Item> items = showAll();
+        for (Item item : items) {
+            if (item.getId() == id) {
+                return item;
+            }
+        }
+        return null;
     }
 
-    static class IdComparator implements Comparator<Item> {
+    public Integer getNewId() {
+        List<Integer> ids = new ArrayList();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(PATH));
+            String currentLine;
+            while ((currentLine = reader.readLine()) != null) {
+                ids.add(Integer.parseInt(currentLine.substring(0, 1)));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (!ids.isEmpty()) {
+            ids.sort(new IdComparator());
+            return ids.get(ids.size() - 1) + 1;
+        } else {
+            return 1;
+        }
+    }
+
+    static class IdComparator implements Comparator<Integer> {
         @Override
-        public int compare(Item o1, Item o2) {
-            return o1.getId().compareTo(o2.getId());
+        public int compare(Integer o1, Integer o2) {
+            return o1.compareTo(o2);
         }
     }
 }

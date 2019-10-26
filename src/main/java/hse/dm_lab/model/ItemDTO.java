@@ -2,14 +2,14 @@ package hse.dm_lab.model;
 
 import java.util.Objects;
 
-public class Item {
+public class ItemDTO {
     private Integer id;
     private String fio;
-    private String sex;
+    private Boolean sex;
     private Integer claimCount;
-    private String role;
+    private Character role;
 
-    public Item(Integer id, String fio, String sex, Integer claimCount, String role) {
+    public ItemDTO(Integer id, String fio, Boolean sex, Integer claimCount, Character role) {
         this.id = id;
         this.fio = fio;
         this.sex = sex;
@@ -17,7 +17,7 @@ public class Item {
         this.role = role;
     }
 
-    public Item(Integer id) {
+    public ItemDTO(Integer id) {
         this.id = id;
     }
 
@@ -37,6 +37,14 @@ public class Item {
         this.fio = fio;
     }
 
+    public Boolean getSex() {
+        return sex;
+    }
+
+    public void setSex(Boolean sex) {
+        this.sex = sex;
+    }
+
     public Integer getClaimCount() {
         return claimCount;
     }
@@ -45,19 +53,11 @@ public class Item {
         this.claimCount = claimCount;
     }
 
-    public String getSex() {
-        return sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public String getRole() {
+    public Character getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Character role) {
         this.role = role;
     }
 
@@ -65,17 +65,18 @@ public class Item {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
-        if (this.id.equals(item.getId())) return true;
-        return id.equals(item.id) &&
+        ItemDTO item = (ItemDTO) o;
+        if (id == item.id) {
+            return true;
+        }
+        return Objects.equals(id, item.id) &&
                 Objects.equals(fio, item.fio) &&
                 Objects.equals(sex, item.sex) &&
-                Objects.equals(claimCount, item.claimCount) &&
-                Objects.equals(role, item.role);
+                Objects.equals(claimCount, item.claimCount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, fio, sex, claimCount, role);
+        return Objects.hash(id, fio, sex, claimCount);
     }
 }
