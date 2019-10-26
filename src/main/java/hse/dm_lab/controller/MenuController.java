@@ -1,7 +1,6 @@
 package hse.dm_lab.controller;
 
 import hse.dm_lab.MainApplication;
-import hse.dm_lab.util.DBManipulator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,12 +28,6 @@ public class MenuController {
         assert deleteDBButton != null : "fx:id=\"deleteDBButton\" was not injected: check your FXML file 'Menu.fxml'.";
         assert newDBButton != null : "fx:id=\"newDBButton\" was not injected: check your FXML file 'Menu.fxml'.";
         assert openDBButton != null : "fx:id=\"openDBButton\" was not injected: check your FXML file 'Menu.fxml'.";
-        try {
-            MainApplication.manipulator = new DBManipulator();
-        } catch (IOException e) {
-            System.out.println("Error creating database manipulator");
-            System.out.println("Cause: " + e.getMessage());
-        }
     }
 
     @FXML
@@ -54,12 +47,7 @@ public class MenuController {
 
     @FXML
     void initDB(ActionEvent event) {
-        try {
-            MainApplication.manipulator = new DBManipulator();
-        } catch (IOException e) {
-            System.out.println("Error creating database manipulator");
-            System.out.println("Cause: " + e.getMessage());
-        }
+        MainApplication.manipulator.createDB();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Успех");
         alert.setHeaderText("Успех");

@@ -15,7 +15,7 @@ import java.util.List;
 public class DBManipulator {
     private static final String PATH = "src/main/resources/db/database.txt";
 
-    public void createDB() throws IOException {
+    public void createDB() {
         try {
             Path dbPath = Paths.get(PATH);
             Files.deleteIfExists(dbPath);
