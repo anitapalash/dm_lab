@@ -1,10 +1,10 @@
 package hse.dm_lab.util;
 
 import hse.dm_lab.model.Item;
+import hse.dm_lab.model.ItemDTO;
 import javafx.scene.control.Alert;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +15,7 @@ import java.util.List;
 public class DBManipulator {
     private static final String PATH = "src/main/resources/db/database.txt";
 
-    public DBManipulator() throws IOException {
+    public void createDB() throws IOException {
         try {
             Path dbPath = Paths.get(PATH);
             Files.deleteIfExists(dbPath);
@@ -59,10 +59,9 @@ public class DBManipulator {
     }
 
     public List<Item> showAll() {
-        URL url = getClass().getResource("/db/database.txt");
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
-            List<Item> items = new ArrayList<>();
+            BufferedReader reader = new BufferedReader(new FileReader(PATH));
+            List<ItemDTO> items = new ArrayList<>();
             String currentLine;
             while((currentLine = reader.readLine()) != null) {
                 String[] fields = currentLine.split("\\|");
@@ -71,12 +70,17 @@ public class DBManipulator {
                 Boolean sex = Integer.parseInt(fields[2]) == 1;
                 Integer claimCount = Integer.parseInt(fields[3]);
                 Character role = fields[4].substring(0, 1).toCharArray()[0];
-                items.add(new Item(id, fio, sex, claimCount, role));
+                items.add(new ItemDTO(id, fio, sex, claimCount, role));
             }
             if (items.isEmpty()) {
                 return new ArrayList<>();
+            } else {
+                List<Item> result = new ArrayList<>();
+                for (ItemDTO item : items) {
+                    result.add(ItemConverter.modelToEntity(item));
+                }
+                return result;
             }
-            return items;
         } catch (FileNotFoundException e) {
             System.out.println("File was not found. Probably you have not created one.");
             System.out.println("Cause: " + e.getMessage());
@@ -87,9 +91,10 @@ public class DBManipulator {
         return null;
     }
 
-    public void saveToDB(Item item) {
+    public void saveToDB(Item object) {
         try {
             BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(PATH, true)));
+            ItemDTO item = ItemConverter.entityToModel(object);
             if (getItem(item.getId()) != null) {
                 throw new Exception("Элемент с таким идентификатором уже существует");
             }

@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 public class MainApplication extends Application {
 
-    public static DBManipulator manipulator;
+    public static DBManipulator manipulator = new DBManipulator();
 
     public static void main(String[] args) throws Exception {
         launch(args);
