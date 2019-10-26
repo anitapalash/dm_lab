@@ -106,7 +106,12 @@ public class InsertController {
         }
 
         //sex field
-        item.setSex(((ToggleButton)toggleGroup.getSelectedToggle()).getText());
+        String sex = ((ToggleButton)toggleGroup.getSelectedToggle()).getText();
+        if (sex != null) {
+            item.setSex(sex);
+        } else {
+            item.setSex("Мужской");
+        }
 
         MainApplication.manipulator.saveToDB(item);
         System.out.println("Added new line: " + item.getFio());
