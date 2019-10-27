@@ -8,9 +8,11 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DBManipulator {
     private static final String PATH = "src/main/resources/db/database.txt";
@@ -155,6 +157,33 @@ public class DBManipulator {
             return ids.get(ids.size() - 1) + 1;
         } else {
             return 1;
+        }
+    }
+
+    public void deleteItem(Integer itemId) {
+        try {
+            File file = new File(PATH);
+            List<String> out = Files.lines(file.toPath())
+                    .filter(line -> !line.contains(String.valueOf(itemId)))
+                    .collect(Collectors.toList());
+            Files.write(file.toPath(), out, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+            System.out.println("Запись была успешно удалена");
+        } catch (FileNotFoundException e) {
+            System.out.println("Файл не найден");
+            System.out.println("Cause: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Ошибка");
+            alert.setContentText("Файл не найден");
+            alert.showAndWait();
+        } catch (IOException e) {
+            System.out.println("Ошибка при чтении из файла");
+            System.out.println("Cause: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Ошибка");
+            alert.setContentText("Ошибка удаления записи");
+            alert.showAndWait();
         }
     }
 

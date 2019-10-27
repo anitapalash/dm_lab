@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -64,6 +65,17 @@ public class MainViewController {
 
     @FXML
     void delete(ActionEvent event) {
+        Item item = mainTable.getSelectionModel().getSelectedItem();
+        if (item == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Ошибка");
+            alert.setContentText("Не выбран элемент для удаления");
+            alert.showAndWait();
+        } else {
+            MainApplication.manipulator.deleteItem(item.getId());
+            refreshTable();
+        }
     }
 
     @FXML
@@ -82,8 +94,7 @@ public class MainViewController {
         stage.setScene(scene);
         stage.setTitle("Palashinovich File Database");
         stage.showAndWait();
-        ObservableList<Item> items = FXCollections.observableArrayList(MainApplication.manipulator.showAll());
-        mainTable.setItems(items);
+        refreshTable();
     }
 
     @FXML
@@ -113,6 +124,11 @@ public class MainViewController {
         sexColumn.setCellValueFactory(new PropertyValueFactory<>("sex"));
         claimColumn.setCellValueFactory(new PropertyValueFactory<>("claimCount"));
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
+        mainTable.setItems(items);
+    }
+
+    void refreshTable() {
+        ObservableList<Item> items = FXCollections.observableArrayList(MainApplication.manipulator.showAll());
         mainTable.setItems(items);
     }
 }
