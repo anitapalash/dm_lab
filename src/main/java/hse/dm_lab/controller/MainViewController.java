@@ -13,16 +13,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
+
+import static javafx.scene.control.cell.TextFieldTableCell.forTableColumn;
 
 public class MainViewController {
 
     @FXML
-    private TableColumn<Item, String> claimColumn;
+    private TableColumn<Item, Number> claimColumn;
 
     @FXML
     private TableView<Item> mainTable;
@@ -185,10 +187,10 @@ public class MainViewController {
         mainTable.setItems(items);
 
         mainTable.setEditable(true);
-        fioColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        sexColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        roleColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        claimColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        fioColumn.setCellFactory(forTableColumn());
+        sexColumn.setCellFactory(forTableColumn());
+        roleColumn.setCellFactory(forTableColumn());
+        claimColumn.setCellFactory(forTableColumn(new NumberStringConverter()));
     }
 
     void refreshTable() {
