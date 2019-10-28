@@ -1,11 +1,13 @@
 package hse.dm_lab.util;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import hse.dm_lab.model.Item;
 import hse.dm_lab.model.ItemDTO;
 import javafx.scene.control.Alert;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,13 +71,15 @@ public class DBManipulator {
             List<ItemDTO> items = new ArrayList<>();
             String currentLine;
             while((currentLine = reader.readLine()) != null) {
-                String[] fields = currentLine.split("\\|");
-                Integer id = Integer.parseInt(fields[0]);
-                String fio = fields[1];
-                Boolean sex = Integer.parseInt(fields[2]) == 1;
-                Integer claimCount = Integer.parseInt(fields[3]);
-                Character role = fields[4].substring(0, 1).toCharArray()[0];
-                items.add(new ItemDTO(id, fio, sex, claimCount, role));
+                if (!currentLine.trim().isEmpty()) {
+                    String[] fields = currentLine.split("\\|");
+                    Integer id = Integer.parseInt(fields[0]);
+                    String fio = fields[1];
+                    Boolean sex = Integer.parseInt(fields[2]) == 1;
+                    Integer claimCount = Integer.parseInt(fields[3]);
+                    Character role = fields[4].substring(0, 1).toCharArray()[0];
+                    items.add(new ItemDTO(id, fio, sex, claimCount, role));
+                }
             }
             if (items.isEmpty()) {
                 return new ArrayList<>();
@@ -120,10 +124,13 @@ public class DBManipulator {
     public void saveToDB(List<Item> items) {
         try {
             BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(PATH, false)));
+            StringBuilder sb = new StringBuilder("");
             for (Item object : items) {
                 ItemDTO item = ItemConverter.entityToModel(object);
-                writer.write(convertItemToString(item));
+                sb.append(convertItemToString(item));
+                sb.append("\n");
             }
+            writer.write(sb.toString());
             writer.flush();
             writer.close();
         } catch (Exception e) {
@@ -238,6 +245,38 @@ public class DBManipulator {
             alert.setTitle("Ошибка");
             alert.setHeaderText("Ошибка");
             alert.setContentText("Не удалось создать копию базы данных");
+            alert.showAndWait();
+        }
+    }
+
+    public void recoverBackup(Path path) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(path.toString()));
+            List<Item> result = new ArrayList<>();
+            String currentLine;
+            while ((currentLine = reader.readLine()) != null) {
+                Type collectionType = new TypeToken<List<ItemDTO>>(){}.getType();
+                List<ItemDTO> preItems = gson.fromJson(currentLine, collectionType);
+                for (ItemDTO item : preItems) {
+                    result.add(ItemConverter.modelToEntity(item));
+                }
+            }
+            saveToDB(result);
+        } catch (FileNotFoundException e) {
+            System.out.println("Файл не найден");
+            System.out.println("Cause: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Ошибка");
+            alert.setContentText("Файл не найден");
+            alert.showAndWait();
+        } catch (IOException e) {
+            System.out.println("Ошибка при чтении из файла");
+            System.out.println("Cause: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Ошибка");
+            alert.setContentText("Ошибка удаления записи");
             alert.showAndWait();
         }
     }

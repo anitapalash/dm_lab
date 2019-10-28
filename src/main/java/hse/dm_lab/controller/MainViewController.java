@@ -14,10 +14,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import static javafx.scene.control.cell.TextFieldTableCell.forTableColumn;
 
@@ -165,6 +167,10 @@ public class MainViewController {
 
     @FXML
     void recoverFromBackup(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        Path file = fileChooser.showOpenDialog(fromBackupButton.getScene().getWindow()).toPath();
+        MainApplication.manipulator.recoverBackup(file);
+        refreshTable();
     }
 
     @FXML
