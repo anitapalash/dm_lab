@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -79,7 +80,64 @@ public class MainViewController {
     }
 
     @FXML
-    void editDB(ActionEvent event) {
+    public void editFioColumn(TableColumn.CellEditEvent editedCell) {
+        Item selectedItem = mainTable.getSelectionModel().getSelectedItem();
+        selectedItem.setFio(editedCell.getNewValue().toString());
+        refreshTable();
+    }
+
+    @FXML
+    public void editSexColumn(TableColumn.CellEditEvent editedCell) {
+        String newSex = editedCell.getNewValue().toString();
+        if (newSex.equals("Мужской") || newSex.equals("Женский")) {
+            Item selectedItem = mainTable.getSelectionModel().getSelectedItem();
+            selectedItem.setSex(newSex);
+            refreshTable();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Ошибка");
+            alert.setContentText("Недопустимое значение");
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    public void editClaimCountColumn(TableColumn.CellEditEvent editedCell) {
+        Integer newClaimCount = Integer.parseInt(editedCell.getNewValue().toString());
+        Item selectedItem = mainTable.getSelectionModel().getSelectedItem();
+        selectedItem.setClaimCount(newClaimCount);
+        refreshTable();
+    }
+
+    @FXML
+    public void editRoleColumn(TableColumn.CellEditEvent editedCell) {
+        String newRole = editedCell.getNewValue().toString();
+        Item selectedItem = mainTable.getSelectionModel().getSelectedItem();
+        switch (newRole) {
+            case "Админ":
+            case "Администратор":
+                selectedItem.setRole("Администратор");
+                break;
+            case "Юзер":
+            case "Пользователь":
+                selectedItem.setRole("Пользователь");
+                break;
+            case "Девелопер":
+            case "Разработчик":
+                selectedItem.setRole("Разработчик");
+                break;
+            case "Аналитик":
+                selectedItem.setRole("Аналитик");
+                break;
+            default:
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Ошибка");
+                alert.setHeaderText("Ошибка");
+                alert.setContentText("Недопустимое значение");
+                alert.showAndWait();
+        }
+        refreshTable();
     }
 
     @FXML
@@ -125,6 +183,12 @@ public class MainViewController {
         claimColumn.setCellValueFactory(new PropertyValueFactory<>("claimCount"));
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
         mainTable.setItems(items);
+
+        mainTable.setEditable(true);
+        fioColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        sexColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        roleColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        claimColumn.setCellFactory(TextFieldTableCell.forTableColumn());
     }
 
     void refreshTable() {

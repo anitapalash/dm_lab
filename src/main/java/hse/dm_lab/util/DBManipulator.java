@@ -100,18 +100,7 @@ public class DBManipulator {
             if (getItem(item.getId()) != null) {
                 throw new Exception("Элемент с таким идентификатором уже существует");
             }
-            StringBuilder sb = new StringBuilder("");
-            sb.append(item.getId());
-            sb.append("|");
-            sb.append(item.getFio());
-            sb.append("|");
-            sb.append(item.getSex() ? 1 : 0);
-            sb.append("|");
-            sb.append(item.getClaimCount());
-            sb.append("|");
-            sb.append(item.getRole());
-            sb.append("\n");
-            writer.write(sb.toString());
+            writer.write(convertItemToString(item));
             writer.flush();
             writer.close();
         } catch (Exception e) {
@@ -126,8 +115,22 @@ public class DBManipulator {
     }
 
     public void saveToDB(List<Item> items) {
-        for (Item i : items) {
-            saveToDB(i);
+        try {
+            BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(PATH, false)));
+            for (Item object : items) {
+                ItemDTO item = ItemConverter.entityToModel(object);
+                writer.write(convertItemToString(item));
+            }
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
+            System.out.println("Произошла ошибка при записи в базу данных");
+            System.out.println("Cause: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Ошибка");
+            alert.setContentText("Произошла ошибка при записи в базу данных");
+            alert.showAndWait();
         }
     }
 
@@ -192,5 +195,20 @@ public class DBManipulator {
         public int compare(Integer o1, Integer o2) {
             return o1.compareTo(o2);
         }
+    }
+
+    String convertItemToString(ItemDTO item) {
+        StringBuilder sb = new StringBuilder("");
+        sb.append(item.getId());
+        sb.append("|");
+        sb.append(item.getFio());
+        sb.append("|");
+        sb.append(item.getSex() ? 1 : 0);
+        sb.append("|");
+        sb.append(item.getClaimCount());
+        sb.append("|");
+        sb.append(item.getRole());
+        sb.append("\n");
+        return sb.toString();
     }
 }
