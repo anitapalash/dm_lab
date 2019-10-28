@@ -1,5 +1,6 @@
 package hse.dm_lab.util;
 
+import com.google.gson.Gson;
 import hse.dm_lab.model.Item;
 import hse.dm_lab.model.ItemDTO;
 import javafx.scene.control.Alert;
@@ -11,11 +12,13 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class DBManipulator {
     private static final String PATH = "src/main/resources/db/database.txt";
+    private final Gson gson = new Gson();
 
     public void createDB() {
         try {
@@ -210,5 +213,32 @@ public class DBManipulator {
         sb.append(item.getRole());
         sb.append("\n");
         return sb.toString();
+    }
+
+    public void backup() {
+        List<Item> preItems = showAll();
+        List<ItemDTO> items = new ArrayList<>();
+        for (Item item : preItems) {
+            items.add(ItemConverter.entityToModel(item));
+        }
+        try {
+            String savedItems = gson.toJson(items);
+            Date currentDate = new Date();
+            String fileName = "db-backup-" + currentDate.getTime();
+            Path path = Paths.get(Paths.get(PATH).getParent().toString() + "/" + fileName);
+            Files.createFile(path);
+            BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(path.toString(), true)));
+            writer.write(savedItems);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Could not create backup file");
+            System.out.println("Cause: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Ошибка");
+            alert.setContentText("Не удалось создать копию базы данных");
+            alert.showAndWait();
+        }
     }
 }

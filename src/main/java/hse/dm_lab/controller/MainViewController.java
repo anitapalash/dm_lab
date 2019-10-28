@@ -64,6 +64,12 @@ public class MainViewController {
 
     @FXML
     void backupDB(ActionEvent event) {
+        MainApplication.manipulator.backup();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Успех");
+        alert.setHeaderText("Успех");
+        alert.setContentText("Копия базы данных успешно создана");
+        alert.showAndWait();
     }
 
     @FXML
