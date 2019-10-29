@@ -28,7 +28,7 @@
                   <Font size="26.0" />
                </font>
             </Label>
-            <TextField fx:id="idText" maxWidth="-Infinity" prefHeight="26.0" prefWidth="89.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <TextField fx:id="idTextField" maxWidth="-Infinity" prefHeight="26.0" prefWidth="89.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets top="20.0" />
                </GridPane.margin>

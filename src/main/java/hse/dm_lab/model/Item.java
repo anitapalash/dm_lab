@@ -9,6 +9,8 @@ public class Item {
     private Integer claimCount;
     private String role;
 
+    public Item() {}
+
     public Item(Integer id, String fio, String sex, Integer claimCount, String role) {
         this.id = id;
         this.fio = fio;

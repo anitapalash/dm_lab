@@ -174,7 +174,14 @@ public class MainViewController {
     }
 
     @FXML
-    void search(ActionEvent event) {
+    void search(ActionEvent event) throws IOException {
+        Stage stage = new Stage();
+        Pane pane = FXMLLoader.load(MainViewController.class.getClassLoader().getResource("fxml/SearchView.fxml"));
+        Scene scene = new Scene(pane);
+        stage.setScene(scene);
+        stage.setTitle("Palashinovich File Database");
+        stage.showAndWait();
+        refreshTable();
     }
 
     @FXML
