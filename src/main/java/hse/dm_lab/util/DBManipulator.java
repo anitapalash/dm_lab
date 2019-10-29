@@ -146,7 +146,9 @@ public class DBManipulator {
             BufferedReader reader = new BufferedReader(new FileReader(PATH));
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
-                ids.add(Integer.parseInt(currentLine.substring(0, 1)));
+                if (!currentLine.trim().isEmpty()) {
+                    ids.add(Integer.parseInt(currentLine.substring(0, 1)));
+                }
             }
         } catch (IOException e) {
             readingException(e);
