@@ -20,6 +20,7 @@ import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 import static javafx.scene.control.cell.TextFieldTableCell.forTableColumn;
 
@@ -36,9 +37,6 @@ public class MainViewController {
 
     @FXML
     private Button deleteButton;
-
-    @FXML
-    private Button editButton;
 
     @FXML
     private TableColumn<Item, String> fioColumn;
@@ -181,6 +179,7 @@ public class MainViewController {
         stage.setScene(scene);
         stage.setTitle("Palashinovich File Database");
         stage.showAndWait();
+        getNewItemsFromMain();
         refreshTable();
     }
 
@@ -189,7 +188,6 @@ public class MainViewController {
         assert claimColumn != null : "fx:id=\"claimColumn\" was not injected: check your FXML file 'MainView.fxml'.";
         assert createBackupButton != null : "fx:id=\"createBackupButton\" was not injected: check your FXML file 'MainView.fxml'.";
         assert deleteButton != null : "fx:id=\"deleteButton\" was not injected: check your FXML file 'MainView.fxml'.";
-        assert editButton != null : "fx:id=\"editButton\" was not injected: check your FXML file 'MainView.fxml'.";
         assert fioColumn != null : "fx:id=\"fioColumn\" was not injected: check your FXML file 'MainView.fxml'.";
         assert fromBackupButton != null : "fx:id=\"fromBackupButton\" was not injected: check your FXML file 'MainView.fxml'.";
         assert idColumn != null : "fx:id=\"idColumn\" was not injected: check your FXML file 'MainView.fxml'.";
@@ -212,8 +210,13 @@ public class MainViewController {
         claimColumn.setCellFactory(forTableColumn(new NumberStringConverter()));
     }
 
-    void refreshTable() {
+    private void refreshTable() {
         ObservableList<Item> items = FXCollections.observableArrayList(MainApplication.manipulator.showAll());
         mainTable.setItems(items);
+    }
+
+    private void getNewItemsFromMain() {
+        List<Item> newItems = MainApplication.getTempList();
+        mainTable.setItems(FXCollections.observableArrayList(newItems));
     }
 }

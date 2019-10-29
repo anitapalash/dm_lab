@@ -8,8 +8,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-import java.util.List;
-
 public class SearchController {
     @FXML
     private TextField idTextField;
@@ -30,7 +28,7 @@ public class SearchController {
     private Button searchButton;
 
     @FXML
-    List<Item> searchItems(ActionEvent event) {
+    void searchItems(ActionEvent event) {
         Item filterItem = new Item();
         if (idTextField.getText() != null && !idTextField.getText().trim().isEmpty()) {
             Integer id = Integer.parseInt(idTextField.getText());
@@ -59,24 +57,35 @@ public class SearchController {
             }
         }
         if (role != null && !role.trim().isEmpty()) {
-            if (role.equals("Девлопер") || role.equals("Разработчик")) {
-                filterItem.setRole("Разработчик");
-            } else if (role.equals("Админ") || role.equals("Администратор")) {
-                filterItem.setRole("Администратор");
-            } else if (role.equals("Юзер") || role.equals("Пользователь")) {
-                filterItem.setRole("Пользователь");
-            } else if (role.equals("Аналитик")) {
-                filterItem.setRole("Аналитик");
-            } else {
-                System.out.println("Недопустимое значение роли");
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Ошибка");
-                alert.setHeaderText("Ошибка");
-                alert.setContentText("Недопустимое значение роли");
-                alert.showAndWait();
+            switch (role) {
+                case "Девлопер":
+                case "Разработчик":
+                    filterItem.setRole("Разработчик");
+                    break;
+                case "Админ":
+                case "Администратор":
+                    filterItem.setRole("Администратор");
+                    break;
+                case "Юзер":
+                case "Пользователь":
+                    filterItem.setRole("Пользователь");
+                    break;
+                case "Аналитик":
+                    filterItem.setRole("Аналитик");
+                    break;
+                default:
+                    System.out.println("Недопустимое значение роли");
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Ошибка");
+                    alert.setHeaderText("Ошибка");
+                    alert.setContentText("Недопустимое значение роли");
+                    alert.showAndWait();
+                    break;
             }
         }
 
-        return MainApplication.manipulator.selectItems(filterItem);
+        MainApplication.setTempList(MainApplication.manipulator.selectItems(filterItem));
+        System.out.println("Search completed");
+        searchButton.getScene().getWindow().hide();
     }
 }
