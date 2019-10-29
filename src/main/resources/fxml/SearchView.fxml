@@ -3,8 +3,7 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.Lighting?>
-<?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="273.0" prefWidth="778.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hse.dm_lab.controller.SearchController">
@@ -38,7 +37,7 @@
                         <Shadow color="#000000b8" />
                      </bumpInput>
                      <light>
-                        <Light.Distant color="#cf81e4" />
+                        <javafx.scene.effect.Light.Distant color="#ff99e2" />
                      </light>
                   </Lighting>
                </effect>
