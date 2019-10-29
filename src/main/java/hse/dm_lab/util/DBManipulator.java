@@ -113,10 +113,10 @@ public class DBManipulator {
         }
     }
 
-    public void saveToDB(List<Item> items) {
+    private void saveToDB(List<Item> items) {
         try {
             BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(PATH, false)));
-            StringBuilder sb = new StringBuilder("");
+            StringBuilder sb = new StringBuilder();
             for (Item object : items) {
                 ItemDTO item = ItemConverter.entityToModel(object);
                 sb.append(convertItemToString(item));
@@ -130,10 +130,10 @@ public class DBManipulator {
         }
     }
 
-    public Item getItem(Integer id) {
+    private Item getItem(Integer id) {
         List<Item> items = showAll();
         for (Item item : items) {
-            if (item.getId() == id) {
+            if (item.getId().equals(id)) {
                 return item;
             }
         }
@@ -181,8 +181,8 @@ public class DBManipulator {
         }
     }
 
-    String convertItemToString(ItemDTO item) {
-        StringBuilder sb = new StringBuilder("");
+    private String convertItemToString(ItemDTO item) {
+        StringBuilder sb = new StringBuilder();
         sb.append(item.getId());
         sb.append("|");
         sb.append(item.getFio());
