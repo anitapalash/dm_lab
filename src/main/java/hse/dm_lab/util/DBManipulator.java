@@ -91,11 +91,9 @@ public class DBManipulator {
                 return result;
             }
         } catch (FileNotFoundException e) {
-            System.out.println("File was not found. Probably you have not created one.");
-            System.out.println("Cause: " + e.getMessage());
+            fileNotFoundException(e);
         } catch (IOException e) {
-            System.out.println("Exception while reading");
-            System.out.println("Cause: " + e.getMessage());
+            readingException(e);
         }
         return null;
     }
@@ -111,13 +109,7 @@ public class DBManipulator {
             writer.flush();
             writer.close();
         } catch (Exception e) {
-            System.out.println("Произошла ошибка при записи в базу данных");
-            System.out.println("Cause: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText("Ошибка");
-            alert.setContentText("Произошла ошибка при записи в базу данных");
-            alert.showAndWait();
+            writingException(e);
         }
     }
 
@@ -134,13 +126,7 @@ public class DBManipulator {
             writer.flush();
             writer.close();
         } catch (Exception e) {
-            System.out.println("Произошла ошибка при записи в базу данных");
-            System.out.println("Cause: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText("Ошибка");
-            alert.setContentText("Произошла ошибка при записи в базу данных");
-            alert.showAndWait();
+            writingException(e);
         }
     }
 
@@ -163,7 +149,7 @@ public class DBManipulator {
                 ids.add(Integer.parseInt(currentLine.substring(0, 1)));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            readingException(e);
         }
         if (!ids.isEmpty()) {
             ids.sort(new IdComparator());
@@ -182,21 +168,9 @@ public class DBManipulator {
             Files.write(file.toPath(), out, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
             System.out.println("Запись была успешно удалена");
         } catch (FileNotFoundException e) {
-            System.out.println("Файл не найден");
-            System.out.println("Cause: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText("Ошибка");
-            alert.setContentText("Файл не найден");
-            alert.showAndWait();
+            fileNotFoundException(e);
         } catch (IOException e) {
-            System.out.println("Ошибка при чтении из файла");
-            System.out.println("Cause: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText("Ошибка");
-            alert.setContentText("Ошибка удаления записи");
-            alert.showAndWait();
+            readingException(e);
         }
     }
 
@@ -263,21 +237,39 @@ public class DBManipulator {
             }
             saveToDB(result);
         } catch (FileNotFoundException e) {
-            System.out.println("Файл не найден");
-            System.out.println("Cause: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText("Ошибка");
-            alert.setContentText("Файл не найден");
-            alert.showAndWait();
+            fileNotFoundException(e);
         } catch (IOException e) {
-            System.out.println("Ошибка при чтении из файла");
-            System.out.println("Cause: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText("Ошибка");
-            alert.setContentText("Ошибка удаления записи");
-            alert.showAndWait();
+            readingException(e);
         }
+    }
+
+    private void fileNotFoundException(Exception e) {
+        System.out.println("Файл не найден");
+        System.out.println("Cause: " + e.getMessage());
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText("Ошибка");
+        alert.setContentText("Файл не найден");
+        alert.showAndWait();
+    }
+
+    private void readingException(Exception e) {
+        System.out.println("Ошибка при чтении из файла");
+        System.out.println("Cause: " + e.getMessage());
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText("Ошибка");
+        alert.setContentText("Ошибка удаления записи");
+        alert.showAndWait();
+    }
+
+    private void writingException(Exception e) {
+        System.out.println("Произошла ошибка при записи в базу данных");
+        System.out.println("Cause: " + e.getMessage());
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText("Ошибка");
+        alert.setContentText("Произошла ошибка при записи в базу данных");
+        alert.showAndWait();
     }
 }
