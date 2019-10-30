@@ -164,7 +164,7 @@ public class DBManipulator {
         try {
             File file = new File(PATH);
             List<String> out = Files.lines(file.toPath())
-                    .filter(line -> !line.contains(String.valueOf(itemId)))
+                    .filter(line -> !(String.valueOf(itemId).equals(line.substring(0, line.indexOf("|")))))
                     .collect(Collectors.toList());
             Files.write(file.toPath(), out, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
             System.out.println("Запись была успешно удалена");
