@@ -84,7 +84,7 @@ public class SearchController {
             }
         }
 
-        MainApplication.setTempList(MainApplication.manipulator.selectItems(filterItem));
+        MainApplication.manipulator.selectItems(filterItem);
         System.out.println("Search completed");
         searchButton.getScene().getWindow().hide();
     }

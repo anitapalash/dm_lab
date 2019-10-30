@@ -120,7 +120,6 @@ public class DBManipulator {
             for (Item object : items) {
                 ItemDTO item = ItemConverter.entityToModel(object);
                 sb.append(convertItemToString(item));
-                sb.append("\n");
             }
             writer.write(sb.toString());
             writer.flush();
@@ -147,7 +146,7 @@ public class DBManipulator {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 if (!currentLine.trim().isEmpty()) {
-                    ids.add(Integer.parseInt(currentLine.substring(0, 1)));
+                    ids.add(Integer.parseInt(currentLine.substring(0, currentLine.indexOf("|"))));
                 }
             }
         } catch (IOException e) {
@@ -245,7 +244,7 @@ public class DBManipulator {
         }
     }
 
-    public List<Item> selectItems(Item filterItem) {
+    public void selectItems(Item filterItem) {
         List<Item> items = showAll();
         if (filterItem.getId() != null) {
             for (Item currentItem : new ArrayList<>(items)) {
@@ -253,6 +252,8 @@ public class DBManipulator {
                     items.remove(currentItem);
                 }
             }
+            saveToDB(items);
+            return;
         }
         if (filterItem.getFio() != null) {
             for (Item currentItem : new ArrayList<>(items)) {
@@ -282,7 +283,7 @@ public class DBManipulator {
                 }
             }
         }
-        return items;
+        saveToDB(items);
     }
 
     private void fileNotFoundException(Exception e) {
