@@ -24,14 +24,14 @@ import java.util.stream.Collectors;
 
 public class DBManipulator {
     private final Gson gson = new Gson();
-    final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    final String URl = "JDBC:mysql://localhost:3306/data_management?serverTimezone=UTC&";
-    final String id = "root";
-    final String  password = "alfresco";
+    private final String URl = "JDBC:mysql://localhost:3306/data_management?serverTimezone=UTC&";
+    private final String id = "root";
+    private final String  password = "alfresco";
     private Connection connection;
 
     public DBManipulator() {
         try {
+            String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
             Class.forName(JDBC_DRIVER);
             connection = DriverManager.getConnection(URl,id,password);
         } catch (SQLException | ClassNotFoundException e) {
@@ -170,7 +170,7 @@ public class DBManipulator {
     }
 
     public Integer getNewId() {
-        List<Integer> ids = new ArrayList();
+        List<Integer> ids = new ArrayList<>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(PATH));
             String currentLine;
@@ -213,18 +213,17 @@ public class DBManipulator {
     }
 
     private String convertItemToString(ItemDTO item) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(item.getId());
-        sb.append("|");
-        sb.append(item.getFio());
-        sb.append("|");
-        sb.append(item.getSex() ? 1 : 0);
-        sb.append("|");
-        sb.append(item.getClaimCount());
-        sb.append("|");
-        sb.append(item.getRole());
-        sb.append("\n");
-        return sb.toString();
+        String sb = item.getId() +
+                "|" +
+                item.getFio() +
+                "|" +
+                (item.getSex() ? 1 : 0) +
+                "|" +
+                item.getClaimCount() +
+                "|" +
+                item.getRole() +
+                "\n";
+        return sb;
     }
 
     public void backup() {
