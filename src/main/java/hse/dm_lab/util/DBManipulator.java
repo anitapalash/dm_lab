@@ -10,27 +10,32 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class DBManipulator {
     private final Gson gson = new Gson();
-    private final String URl = "JDBC:mysql://localhost:3306/data_management?serverTimezone=UTC&";
+    private final String URl = "JDBC:mysql://localhost:3306/data_management";
     private final String id = "root";
-    private final String  password = "alfresco";
+    private final String password = "alfresco";
     private Connection connection;
 
     public DBManipulator() {
         try {
-            String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+            String JDBC_DRIVER = "com.mysql.jdbc.Driver";
             Class.forName(JDBC_DRIVER);
-            connection = DriverManager.getConnection(URl,id,password);
+            Properties properties = new Properties();
+            properties.setProperty("user", id);
+            properties.setProperty("password", password);
+            properties.setProperty("useUnicode","true");
+            properties.setProperty("characterEncoding","cp1251");
+            properties.setProperty("serverTimezone", "UTC");
+            connection = DriverManager.getConnection(URl,properties);
+            connection.createStatement().executeUpdate("SET NAMES utf8");
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println("Exception while connecting with MySQL");
             e.printStackTrace();
@@ -42,18 +47,17 @@ public class DBManipulator {
     public void createDB() {
         try {
             Statement statement = connection.createStatement();
-            String createTableCmd = "CREATE TABLE claims (" +
+            String createTableCmd = "CREATE TABLE data_management.claims (" +
                     "    id INT(64) NOT NULL PRIMARY KEY AUTO_INCREMENT," +
                     "    fio VARCHAR(128)," +
                     "    sex BOOL DEFAULT FALSE," +
                     "    claim_count INT(128)," +
-                    "    role VARCHAR(64)" +
-                    ")";
+                    "    role VARCHAR(32)" +
+                    ") CHARACTER SET utf8 COLLATE utf8_general_ci";
 
             connection = DriverManager.getConnection(URl,id,password);
             statement.executeUpdate(createTableCmd);
             System.out.println("Table created");
-            connection.commit();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Успех");
@@ -77,7 +81,6 @@ public class DBManipulator {
             Statement statement = connection.createStatement();
             String deleteCmd = "DROP TABLE IF EXISTS claims";
             statement.executeUpdate(deleteCmd);
-            connection.commit();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Успех");
@@ -115,14 +118,14 @@ public class DBManipulator {
 
     public void saveToDB(Item object) {
         try {
-            BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(PATH, true)));
-            ItemDTO item = ItemConverter.entityToModel(object);
-            if (getItem(item.getId()) != null) {
-                throw new Exception("Элемент с таким идентификатором уже существует");
-            }
-            writer.write(convertItemToString(item));
-            writer.flush();
-            writer.close();
+            String query = "INSERT INTO data_management.claims (fio, sex, claim_count, role) VALUES (?, ?, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, object.getFio());
+            statement.setBoolean(2, object.getSex().equals("Мужской"));
+            statement.setInt(3, object.getClaimCount());
+            statement.setString(4, object.getRole());
+
+            statement.execute();
         } catch (Exception e) {
             writingException(e);
         }
@@ -130,15 +133,9 @@ public class DBManipulator {
 
     private void saveToDB(List<Item> items) {
         try {
-            BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(PATH, false)));
-            StringBuilder sb = new StringBuilder();
             for (Item object : items) {
-                ItemDTO item = ItemConverter.entityToModel(object);
-                sb.append(convertItemToString(item));
+                saveToDB(object);
             }
-            writer.write(sb.toString());
-            writer.flush();
-            writer.close();
         } catch (Exception e) {
             writingException(e);
         }
@@ -152,27 +149,6 @@ public class DBManipulator {
             }
         }
         return null;
-    }
-
-    public Integer getNewId() {
-        List<Integer> ids = new ArrayList<>();
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(PATH));
-            String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
-                if (!currentLine.trim().isEmpty()) {
-                    ids.add(Integer.parseInt(currentLine.substring(0, currentLine.indexOf("|"))));
-                }
-            }
-        } catch (IOException e) {
-            readingException(e);
-        }
-        if (!ids.isEmpty()) {
-            ids.sort(new IdComparator());
-            return ids.get(ids.size() - 1) + 1;
-        } else {
-            return 1;
-        }
     }
 
     public void deleteItem(Integer itemId) {
@@ -190,53 +166,32 @@ public class DBManipulator {
         }
     }
 
-    static class IdComparator implements Comparator<Integer> {
-        @Override
-        public int compare(Integer o1, Integer o2) {
-            return o1.compareTo(o2);
-        }
-    }
-
-    private String convertItemToString(ItemDTO item) {
-        String sb = item.getId() +
-                "|" +
-                item.getFio() +
-                "|" +
-                (item.getSex() ? 1 : 0) +
-                "|" +
-                item.getClaimCount() +
-                "|" +
-                item.getRole() +
-                "\n";
-        return sb;
-    }
-
-    public void backup() {
-        List<Item> preItems = showAll();
-        List<ItemDTO> items = new ArrayList<>();
-        for (Item item : preItems) {
-            items.add(ItemConverter.entityToModel(item));
-        }
-        try {
-            String savedItems = gson.toJson(items);
-            Date currentDate = new Date();
-            String fileName = "db-backup-" + currentDate.getTime();
-            Path path = Paths.get(Paths.get(PATH).getParent().toString() + "/" + fileName);
-            Files.createFile(path);
-            BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(path.toString(), true)));
-            writer.write(savedItems);
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Could not create backup file");
-            System.out.println("Cause: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText("Ошибка");
-            alert.setContentText("Не удалось создать копию базы данных");
-            alert.showAndWait();
-        }
-    }
+//    public void backup() {
+//        List<Item> preItems = showAll();
+//        List<ItemDTO> items = new ArrayList<>();
+//        for (Item item : preItems) {
+//            items.add(ItemConverter.entityToModel(item));
+//        }
+//        try {
+//            String savedItems = gson.toJson(items);
+//            Date currentDate = new Date();
+//            String fileName = "db-backup-" + currentDate.getTime();
+//            Path path = Paths.get(Paths.get(PATH).getParent().toString() + "/" + fileName);
+//            Files.createFile(path);
+//            BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(path.toString(), true)));
+//            writer.write(savedItems);
+//            writer.flush();
+//            writer.close();
+//        } catch (IOException e) {
+//            System.out.println("Could not create backup file");
+//            System.out.println("Cause: " + e.getMessage());
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("Ошибка");
+//            alert.setHeaderText("Ошибка");
+//            alert.setContentText("Не удалось создать копию базы данных");
+//            alert.showAndWait();
+//        }
+//    }
 
     public void recoverBackup(Path path) {
         try {

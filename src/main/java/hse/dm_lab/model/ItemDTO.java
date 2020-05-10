@@ -7,18 +7,14 @@ public class ItemDTO {
     private String fio;
     private Boolean sex;
     private Integer claimCount;
-    private Character role;
+    private String role;
 
-    public ItemDTO(Integer id, String fio, Boolean sex, Integer claimCount, Character role) {
+    public ItemDTO(Integer id, String fio, Boolean sex, Integer claimCount, String role) {
         this.id = id;
         this.fio = fio;
         this.sex = sex;
         this.claimCount = claimCount;
         this.role = role;
-    }
-
-    public ItemDTO(Integer id) {
-        this.id = id;
     }
 
     public Integer getId() {
@@ -33,32 +29,16 @@ public class ItemDTO {
         return fio;
     }
 
-    public void setFio(String fio) {
-        this.fio = fio;
-    }
-
     public Boolean getSex() {
         return sex;
-    }
-
-    public void setSex(Boolean sex) {
-        this.sex = sex;
     }
 
     public Integer getClaimCount() {
         return claimCount;
     }
 
-    public void setClaimCount(Integer claimCount) {
-        this.claimCount = claimCount;
-    }
-
-    public Character getRole() {
+    public String getRole() {
         return role;
-    }
-
-    public void setRole(Character role) {
-        this.role = role;
     }
 
     @Override
@@ -66,7 +46,7 @@ public class ItemDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemDTO item = (ItemDTO) o;
-        if (id == item.id) {
+        if (item.id.equals(id)) {
             return true;
         }
         return Objects.equals(id, item.id) &&

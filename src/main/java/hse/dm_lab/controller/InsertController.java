@@ -30,7 +30,8 @@ public class InsertController {
 
     @FXML
     void submitInsert(ActionEvent event) {
-        Item item = new Item(MainApplication.manipulator.getNewId());
+//        Item item = new Item(MainApplication.manipulator.getNewId());
+        Item item = new Item();
         //fio field
         if (fioTextField.getText() == null || fioTextField.getText().trim().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
