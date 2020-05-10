@@ -12,10 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -56,6 +53,7 @@ public class DBManipulator {
             connection = DriverManager.getConnection(URl,id,password);
             statement.executeUpdate(createTableCmd);
             System.out.println("Table created");
+            connection.commit();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Успех");
@@ -79,6 +77,8 @@ public class DBManipulator {
             Statement statement = connection.createStatement();
             String deleteCmd = "DROP TABLE IF EXISTS claims";
             statement.executeUpdate(deleteCmd);
+            connection.commit();
+
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Успех");
             alert.setHeaderText("Успех");
@@ -97,33 +97,18 @@ public class DBManipulator {
 
     public List<Item> showAll() {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(PATH));
-            List<ItemDTO> items = new ArrayList<>();
-            String currentLine;
-            while((currentLine = reader.readLine()) != null) {
-                if (!currentLine.trim().isEmpty()) {
-                    String[] fields = currentLine.split("\\|");
-                    Integer id = Integer.parseInt(fields[0]);
-                    String fio = fields[1];
-                    Boolean sex = Integer.parseInt(fields[2]) == 1;
-                    Integer claimCount = Integer.parseInt(fields[3]);
-                    Character role = fields[4].substring(0, 1).toCharArray()[0];
-                    items.add(new ItemDTO(id, fio, sex, claimCount, role));
-                }
+            List<Item> result = new ArrayList<>();
+            String query = "SELECT * FROM data_management.claims";
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                Item item = ItemConverter.entityFromResultSet(rs);
+                result.add(item);
             }
-            if (items.isEmpty()) {
-                return new ArrayList<>();
-            } else {
-                List<Item> result = new ArrayList<>();
-                for (ItemDTO item : items) {
-                    result.add(ItemConverter.modelToEntity(item));
-                }
-                return result;
-            }
-        } catch (FileNotFoundException e) {
-            fileNotFoundException(e);
-        } catch (IOException e) {
-            readingException(e);
+            return result;
+        } catch (SQLException e) {
+            System.out.println("Ошибка во время выполнения select'a");
+            e.printStackTrace();
         }
         return null;
     }
