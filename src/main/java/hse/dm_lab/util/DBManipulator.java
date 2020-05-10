@@ -12,6 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -19,15 +23,46 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DBManipulator {
-    private static final String PATH = "src/main/resources/db/database.txt";
     private final Gson gson = new Gson();
+    final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+    final String URl = "JDBC:mysql://localhost:3306/data_management?serverTimezone=UTC&";
+    final String id = "root";
+    final String  password = "alfresco";
+    private Connection connection;
+
+    public DBManipulator() {
+        try {
+            Class.forName(JDBC_DRIVER);
+            connection = DriverManager.getConnection(URl,id,password);
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println("Exception while connecting with MySQL");
+            e.printStackTrace();
+        }
+    }
+
+    private static final String PATH = "src/main/resources/db/database.txt";
 
     public void createDB() {
         try {
-            Path dbPath = Paths.get(PATH);
-            Files.deleteIfExists(dbPath);
-            Files.createFile(dbPath);
-        } catch (IOException e) {
+            Statement statement = connection.createStatement();
+            String createTableCmd = "CREATE TABLE claims (" +
+                    "    id INT(64) NOT NULL PRIMARY KEY AUTO_INCREMENT," +
+                    "    fio VARCHAR(128)," +
+                    "    sex BOOL DEFAULT FALSE," +
+                    "    claim_count INT(128)," +
+                    "    role VARCHAR(64)" +
+                    ")";
+
+            connection = DriverManager.getConnection(URl,id,password);
+            statement.executeUpdate(createTableCmd);
+            System.out.println("Table created");
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Успех");
+            alert.setHeaderText("Успех");
+            alert.setContentText("Однотабличная база данных успешно создана");
+            alert.showAndWait();
+        } catch (SQLException e) {
             System.out.println("Could not create database");
             System.out.println("Cause: " + e.getMessage());
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -38,23 +73,18 @@ public class DBManipulator {
         }
     }
 
+    //удаление базы данных
     public void deleteDB() {
         try {
-            if (Files.exists(Paths.get(PATH))) {
-                Files.delete(Paths.get(PATH));
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Успех");
-                alert.setHeaderText("Успех");
-                alert.setContentText("База данных успешно удалена");
-                alert.showAndWait();
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Ошибка");
-                alert.setHeaderText("Ошибка");
-                alert.setContentText("Не существует базы для удаления");
-                alert.showAndWait();
-            }
-        } catch (IOException e) {
+            Statement statement = connection.createStatement();
+            String deleteCmd = "DROP TABLE IF EXISTS claims";
+            statement.executeUpdate(deleteCmd);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Успех");
+            alert.setHeaderText("Успех");
+            alert.setContentText("База данных успешно удалена");
+            alert.showAndWait();
+        } catch (SQLException e) {
             System.out.println("Could not delete database");
             System.out.println("Cause: " + e.getMessage());
             Alert alert = new Alert(Alert.AlertType.ERROR);

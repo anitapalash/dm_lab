@@ -5,7 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -48,11 +47,6 @@ public class MenuController {
     @FXML
     void initDB(ActionEvent event) {
         MainApplication.manipulator.createDB();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Успех");
-        alert.setHeaderText("Успех");
-        alert.setContentText("База данных успешно создана");
-        alert.showAndWait();
     }
 
     @FXML
