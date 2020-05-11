@@ -1,15 +1,13 @@
 package hse.dm_lab.util;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import hse.dm_lab.model.Item;
-import hse.dm_lab.model.ItemDTO;
 import javafx.scene.control.Alert;
 
-import java.io.*;
-import java.lang.reflect.Type;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.sql.*;
 import java.util.ArrayList;
@@ -179,53 +177,6 @@ public class DBManipulator {
                     .collect(Collectors.toList());
             Files.write(file.toPath(), out, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
             System.out.println("Запись была успешно удалена");
-        } catch (FileNotFoundException e) {
-            fileNotFoundException(e);
-        } catch (IOException e) {
-            readingException(e);
-        }
-    }
-
-//    public void backup() {
-//        List<Item> preItems = showAll();
-//        List<ItemDTO> items = new ArrayList<>();
-//        for (Item item : preItems) {
-//            items.add(ItemConverter.entityToModel(item));
-//        }
-//        try {
-//            String savedItems = gson.toJson(items);
-//            Date currentDate = new Date();
-//            String fileName = "db-backup-" + currentDate.getTime();
-//            Path path = Paths.get(Paths.get(PATH).getParent().toString() + "/" + fileName);
-//            Files.createFile(path);
-//            BufferedWriter writer = new BufferedWriter(new PrintWriter(new FileOutputStream(path.toString(), true)));
-//            writer.write(savedItems);
-//            writer.flush();
-//            writer.close();
-//        } catch (IOException e) {
-//            System.out.println("Could not create backup file");
-//            System.out.println("Cause: " + e.getMessage());
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setTitle("Ошибка");
-//            alert.setHeaderText("Ошибка");
-//            alert.setContentText("Не удалось создать копию базы данных");
-//            alert.showAndWait();
-//        }
-//    }
-
-    public void recoverBackup(Path path) {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(path.toString()));
-            List<Item> result = new ArrayList<>();
-            String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
-                Type collectionType = new TypeToken<List<ItemDTO>>(){}.getType();
-                List<ItemDTO> preItems = gson.fromJson(currentLine, collectionType);
-                for (ItemDTO item : preItems) {
-                    result.add(ItemConverter.modelToEntity(item));
-                }
-            }
-            saveToDB(result);
         } catch (FileNotFoundException e) {
             fileNotFoundException(e);
         } catch (IOException e) {

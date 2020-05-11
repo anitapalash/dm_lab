@@ -1,22 +1,11 @@
 package hse.dm_lab.util;
 
 import hse.dm_lab.model.Item;
-import hse.dm_lab.model.ItemDTO;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ItemConverter {
-
-    static Item modelToEntity(ItemDTO model) {
-        String sex;
-        if (model.getSex()) {
-            sex = "Мужской";
-        } else {
-            sex = "Женский";
-        }
-        return new Item(model.getId(), model.getFio(), sex, model.getClaimCount(), model.getRole());
-    }
 
     static Item entityFromResultSet(ResultSet resultSet) {
         try {
