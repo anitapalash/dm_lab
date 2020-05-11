@@ -30,7 +30,6 @@ public class InsertController {
 
     @FXML
     void submitInsert(ActionEvent event) {
-//        Item item = new Item(MainApplication.manipulator.getNewId());
         Item item = new Item();
         //fio field
         if (fioTextField.getText() == null || fioTextField.getText().trim().isEmpty()) {
@@ -120,6 +119,7 @@ public class InsertController {
     @FXML
     void initialize() {
         maleRadioButton.setToggleGroup(toggleGroup);
+        maleRadioButton.setSelected(true);
         femaleRadioButton.setToggleGroup(toggleGroup);
     }
 }

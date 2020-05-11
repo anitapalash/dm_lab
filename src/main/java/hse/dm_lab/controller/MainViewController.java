@@ -14,12 +14,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 import static javafx.scene.control.cell.TextFieldTableCell.forTableColumn;
 
@@ -32,25 +30,16 @@ public class MainViewController {
     private TableView<Item> mainTable;
 
     @FXML
-    private Button createBackupButton;
-
-    @FXML
     private Button deleteButton;
 
     @FXML
     private TableColumn<Item, String> fioColumn;
 
     @FXML
-    private Button fromBackupButton;
-
-    @FXML
     private Button clearTableButton;
 
     @FXML
     private TableColumn<Item, String> idColumn;
-
-    @FXML
-    private Button importDataButton;
 
     @FXML
     private Button insertButton;
@@ -63,16 +52,6 @@ public class MainViewController {
 
     @FXML
     private TableColumn<Item, String> roleColumn;
-
-    @FXML
-    void backupDB(ActionEvent event) {
-//        MainApplication.manipulator.backup();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Успех");
-        alert.setHeaderText("Успех");
-        alert.setContentText("Копия базы данных успешно создана");
-        alert.showAndWait();
-    }
 
     @FXML
     void delete(ActionEvent event) {
@@ -157,10 +136,6 @@ public class MainViewController {
     }
 
     @FXML
-    void importData(ActionEvent event) {
-    }
-
-    @FXML
     void insert(ActionEvent event) throws IOException {
         Stage stage = new Stage();
         Pane pane = FXMLLoader.load(MainViewController.class.getClassLoader().getResource("fxml/InsertView.fxml"));
@@ -168,14 +143,6 @@ public class MainViewController {
         stage.setScene(scene);
         stage.setTitle("Palashinovich File Database");
         stage.showAndWait();
-        refreshTable();
-    }
-
-    @FXML
-    void recoverFromBackup(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        Path file = fileChooser.showOpenDialog(fromBackupButton.getScene().getWindow()).toPath();
-        MainApplication.manipulator.recoverBackup(file);
         refreshTable();
     }
 
@@ -193,12 +160,9 @@ public class MainViewController {
     @FXML
     void initialize() {
         assert claimColumn != null : "fx:id=\"claimColumn\" was not injected: check your FXML file 'MainView.fxml'.";
-        assert createBackupButton != null : "fx:id=\"createBackupButton\" was not injected: check your FXML file 'MainView.fxml'.";
         assert deleteButton != null : "fx:id=\"deleteButton\" was not injected: check your FXML file 'MainView.fxml'.";
         assert fioColumn != null : "fx:id=\"fioColumn\" was not injected: check your FXML file 'MainView.fxml'.";
-        assert fromBackupButton != null : "fx:id=\"fromBackupButton\" was not injected: check your FXML file 'MainView.fxml'.";
         assert idColumn != null : "fx:id=\"idColumn\" was not injected: check your FXML file 'MainView.fxml'.";
-        assert importDataButton != null : "fx:id=\"importDataButton\" was not injected: check your FXML file 'MainView.fxml'.";
         assert insertButton != null : "fx:id=\"insertButton\" was not injected: check your FXML file 'MainView.fxml'.";
         assert searchButon != null : "fx:id=\"searchButon\" was not injected: check your FXML file 'MainView.fxml'.";
         assert sexColumn != null : "fx:id=\"sexColumn\" was not injected: check your FXML file 'MainView.fxml'.";

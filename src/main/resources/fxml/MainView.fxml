@@ -41,29 +41,13 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           </rowConstraints>
         </GridPane>
-        <GridPane GridPane.columnIndex="0" GridPane.rowIndex="2">
-          <children>
-            <Button fx:id="createBackupButton" font="$x1" mnemonicParsing="false" onAction="#backupDB" text="Создание backup файла" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
-            <Button fx:id="fromBackupButton" mnemonicParsing="false" onAction="#recoverFromBackup" text="Восстановить данные из backup файла" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
-            <Button fx:id="importDataButton" font="$x1" mnemonicParsing="false" onAction="#importData" text="Импорт\Экспорт" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
-          </children>
-          <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          </columnConstraints>
-          <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          </rowConstraints>
-        </GridPane>
       </children>
       <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       </columnConstraints>
       <rowConstraints>
-        <RowConstraints maxHeight="200.0" minHeight="10.0" prefHeight="112.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="342.0" minHeight="10.0" prefHeight="327.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="319.0" minHeight="10.0" prefHeight="57.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="200.0" minHeight="10.0" prefHeight="104.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="409.0" minHeight="10.0" prefHeight="392.0" vgrow="SOMETIMES" />
       </rowConstraints>
     </GridPane>
   </children>
