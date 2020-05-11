@@ -76,7 +76,7 @@ public class DBManipulator {
     public void deleteDB() {
         try {
             Statement statement = connection.createStatement();
-            String deleteCmd = "DROP TABLE IF EXISTS claims";
+            String deleteCmd = "DROP TABLE IF EXISTS data_management.claims";
             statement.executeUpdate(deleteCmd);
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -91,6 +91,29 @@ public class DBManipulator {
             alert.setTitle("Ошибка");
             alert.setHeaderText("Ошибка");
             alert.setContentText("Не удалось удалить базу данных");
+            alert.showAndWait();
+        }
+    }
+
+    //очистка базы данных
+    public void clearDB() {
+        try {
+            Statement statement = connection.createStatement();
+            String query = "TRUNCATE TABLE data_management.claims";
+            statement.executeUpdate(query);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Успех");
+            alert.setHeaderText("Успех");
+            alert.setContentText("База данных успешно очищена");
+            alert.showAndWait();
+        } catch (SQLException e) {
+            System.out.println("Could not clear database");
+            System.out.println("Cause: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Ошибка");
+            alert.setContentText("Не удалось очистить базу данных");
             alert.showAndWait();
         }
     }

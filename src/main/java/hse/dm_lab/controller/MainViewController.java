@@ -44,6 +44,9 @@ public class MainViewController {
     private Button fromBackupButton;
 
     @FXML
+    private Button clearTableButton;
+
+    @FXML
     private TableColumn<Item, String> idColumn;
 
     @FXML
@@ -144,6 +147,12 @@ public class MainViewController {
                 alert.setContentText("Недопустимое значение");
                 alert.showAndWait();
         }
+        refreshTable();
+    }
+
+    @FXML
+    public void clearTable(ActionEvent event) {
+        MainApplication.manipulator.clearDB();
         refreshTable();
     }
 
