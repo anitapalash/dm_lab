@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class DBManipulator {
     private final Gson gson = new Gson();
-    private final String URl = "JDBC:mysql://localhost:3306/data_management";
+    private final String URl = "JDBC:mysql://localhost:3306/data_management?serverTimezone=UTC&characterEncoding=utf8&";
     private final String id = "root";
     private final String password = "alfresco";
     private Connection connection;
@@ -31,11 +31,7 @@ public class DBManipulator {
             Properties properties = new Properties();
             properties.setProperty("user", id);
             properties.setProperty("password", password);
-            properties.setProperty("useUnicode","true");
-            properties.setProperty("characterEncoding","cp1251");
-            properties.setProperty("serverTimezone", "UTC");
             connection = DriverManager.getConnection(URl,properties);
-            connection.createStatement().executeUpdate("SET NAMES utf8");
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println("Exception while connecting with MySQL");
             e.printStackTrace();
@@ -46,6 +42,7 @@ public class DBManipulator {
 
     public void createDB() {
         try {
+            deleteDB();
             Statement statement = connection.createStatement();
             String createTableCmd = "CREATE TABLE data_management.claims (" +
                     "    id INT(64) NOT NULL PRIMARY KEY AUTO_INCREMENT," +
@@ -53,7 +50,7 @@ public class DBManipulator {
                     "    sex BOOL DEFAULT FALSE," +
                     "    claim_count INT(128)," +
                     "    role VARCHAR(32)" +
-                    ") CHARACTER SET utf8 COLLATE utf8_general_ci";
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
 
             connection = DriverManager.getConnection(URl,id,password);
             statement.executeUpdate(createTableCmd);
