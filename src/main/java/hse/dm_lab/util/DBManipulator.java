@@ -139,16 +139,6 @@ public class DBManipulator {
         }
     }
 
-    private void saveToDB(List<Item> items) {
-        try {
-            for (Item object : items) {
-                saveToDB(object);
-            }
-        } catch (Exception e) {
-            writingException(e);
-        }
-    }
-
     public void deleteItem(Integer itemId) {
         try {
             Statement statement = connection.createStatement();
@@ -167,45 +157,7 @@ public class DBManipulator {
     }
 
     public void selectItems(Item filterItem) {
-        List<Item> items = showAll();
-        if (filterItem.getId() != null) {
-            for (Item currentItem : new ArrayList<>(items)) {
-                if (!currentItem.getId().equals(filterItem.getId())) {
-                    items.remove(currentItem);
-                }
-            }
-            saveToDB(items);
-            return;
-        }
-        if (filterItem.getFio() != null) {
-            for (Item currentItem : new ArrayList<>(items)) {
-                if (!currentItem.getFio().equals(filterItem.getFio())) {
-                    items.remove(currentItem);
-                }
-            }
-        }
-        if (filterItem.getClaimCount() != null) {
-            for (Item currentItem : new ArrayList<>(items)) {
-                if (!currentItem.getClaimCount().equals(filterItem.getClaimCount())) {
-                    items.remove(currentItem);
-                }
-            }
-        }
-        if (filterItem.getSex() != null) {
-            for (Item currentItem : new ArrayList<>(items)) {
-                if (!currentItem.getSex().equals(filterItem.getSex())) {
-                    items.remove(currentItem);
-                }
-            }
-        }
-        if (filterItem.getRole() != null) {
-            for (Item currentItem : new ArrayList<>(items)) {
-                if (!currentItem.getRole().equals(filterItem.getRole())) {
-                    items.remove(currentItem);
-                }
-            }
-        }
-        saveToDB(items);
+
     }
 
     private void writingException(Exception e) {
