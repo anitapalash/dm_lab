@@ -1,22 +1,14 @@
 package hse.dm_lab.util;
 
-import com.google.gson.Gson;
 import hse.dm_lab.model.Item;
 import javafx.scene.control.Alert;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 public class DBManipulator {
-    private final Gson gson = new Gson();
     private final String URl = "JDBC:mysql://localhost:3306/data_management?serverTimezone=UTC&characterEncoding=utf8&";
     private final String id = "root";
     private final String password = "alfresco";
@@ -35,8 +27,6 @@ public class DBManipulator {
             e.printStackTrace();
         }
     }
-
-    private static final String PATH = "src/main/resources/db/database.txt";
 
     public void createDB() {
         try {
@@ -159,28 +149,20 @@ public class DBManipulator {
         }
     }
 
-    private Item getItem(Integer id) {
-        List<Item> items = showAll();
-        for (Item item : items) {
-            if (item.getId().equals(id)) {
-                return item;
-            }
-        }
-        return null;
-    }
-
     public void deleteItem(Integer itemId) {
         try {
-            File file = new File(PATH);
-            List<String> out = Files.lines(file.toPath())
-                    .filter(line -> !(String.valueOf(itemId).equals(line.substring(0, line.indexOf("|")))))
-                    .collect(Collectors.toList());
-            Files.write(file.toPath(), out, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+            Statement statement = connection.createStatement();
+            String query = "DELETE FROM data_management.claims WHERE id = " + itemId;
+            statement.executeUpdate(query);
             System.out.println("Запись была успешно удалена");
-        } catch (FileNotFoundException e) {
-            fileNotFoundException(e);
-        } catch (IOException e) {
-            readingException(e);
+        } catch (SQLException e) {
+            System.out.println("Could not clear database");
+            System.out.println("Cause: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Ошибка");
+            alert.setContentText("Не удалось удалить элемент из базы данных");
+            alert.showAndWait();
         }
     }
 
@@ -224,26 +206,6 @@ public class DBManipulator {
             }
         }
         saveToDB(items);
-    }
-
-    private void fileNotFoundException(Exception e) {
-        System.out.println("Файл не найден");
-        System.out.println("Cause: " + e.getMessage());
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Ошибка");
-        alert.setHeaderText("Ошибка");
-        alert.setContentText("Файл не найден");
-        alert.showAndWait();
-    }
-
-    private void readingException(Exception e) {
-        System.out.println("Ошибка при чтении из файла");
-        System.out.println("Cause: " + e.getMessage());
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Ошибка");
-        alert.setHeaderText("Ошибка");
-        alert.setContentText("Ошибка удаления записи");
-        alert.showAndWait();
     }
 
     private void writingException(Exception e) {

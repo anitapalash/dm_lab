@@ -112,7 +112,6 @@ public class InsertController {
         }
 
         MainApplication.manipulator.saveToDB(item);
-        System.out.println("Added new line: " + item.getFio());
         submitButton.getScene().getWindow().hide();
     }
 
