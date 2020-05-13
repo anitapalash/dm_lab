@@ -9,19 +9,20 @@ import java.util.List;
 import java.util.Properties;
 
 public class DBManipulator {
-    private final String URl = "JDBC:mysql://localhost:3306/data_management?serverTimezone=UTC&characterEncoding=utf8&";
-    private final String id = "root";
+    private final String URl = "jdbc:postgresql://localhost:5432/postgres";
+    private final String id = "postgres";
     private final String password = "alfresco";
     private Connection connection;
 
     public DBManipulator() {
         try {
-            String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+            String JDBC_DRIVER = "org.postgresql.Driver";
             Class.forName(JDBC_DRIVER);
             Properties properties = new Properties();
             properties.setProperty("user", id);
             properties.setProperty("password", password);
             connection = DriverManager.getConnection(URl,properties);
+            initProcedures();
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println("Exception while connecting with MySQL");
             e.printStackTrace();
@@ -31,17 +32,11 @@ public class DBManipulator {
     public void createDB() {
         try {
             deleteDB();
-            Statement statement = connection.createStatement();
-            String createTableCmd = "CREATE TABLE data_management.claims (" +
-                    "    id INT(64) NOT NULL PRIMARY KEY AUTO_INCREMENT," +
-                    "    fio VARCHAR(128)," +
-                    "    sex BOOL DEFAULT FALSE," +
-                    "    claim_count INT(128)," +
-                    "    role VARCHAR(32)" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
+            CallableStatement proc = connection.prepareCall("{ ? = call createItemTable() }");
+            proc.execute();
+            proc.close();
 
             connection = DriverManager.getConnection(URl,id,password);
-            statement.executeUpdate(createTableCmd);
             System.out.println("Table created");
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -63,9 +58,9 @@ public class DBManipulator {
     //удаление базы данных
     public void deleteDB() {
         try {
-            Statement statement = connection.createStatement();
-            String deleteCmd = "DROP TABLE IF EXISTS data_management.claims";
-            statement.executeUpdate(deleteCmd);
+            CallableStatement proc = connection.prepareCall("{ ? = call dropItemTable() }");
+            proc.execute();
+            proc.close();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Успех");
@@ -86,9 +81,9 @@ public class DBManipulator {
     //очистка базы данных
     public void clearDB() {
         try {
-            Statement statement = connection.createStatement();
-            String query = "TRUNCATE TABLE data_management.claims";
-            statement.executeUpdate(query);
+            CallableStatement proc = connection.prepareCall("{ ? = call cleanItemTable() }");
+            proc.execute();
+            proc.close();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Успех");
@@ -109,11 +104,12 @@ public class DBManipulator {
     public List<Item> showAll() {
         try {
             List<Item> result = new ArrayList<>();
-            String query = "SELECT * FROM data_management.claims";
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(query);
-            while (rs.next()) {
-                Item item = ItemConverter.entityFromResultSet(rs);
+            CallableStatement proc = connection.prepareCall("{ ? = call selectAllItems() }");
+            proc.execute();
+            ResultSet results = proc.getResultSet();
+
+            while (results.next()) {
+                Item item = ItemConverter.entityFromResultSet(results);
                 result.add(item);
             }
             return result;
@@ -126,14 +122,13 @@ public class DBManipulator {
 
     public void saveToDB(Item object) {
         try {
-            String query = "INSERT INTO data_management.claims (fio, sex, claim_count, role) VALUES (?, ?, ?, ?)";
-            PreparedStatement statement = connection.prepareStatement(query);
+            CallableStatement statement = connection.prepareCall("{ call insertNewItem(?, ?, ?, ?) }");
             statement.setString(1, object.getFio());
             statement.setBoolean(2, object.getSex().equals("Мужской"));
             statement.setInt(3, object.getClaimCount());
             statement.setString(4, object.getRole());
-
             statement.execute();
+            statement.close();
         } catch (Exception e) {
             writingException(e);
         }
@@ -141,9 +136,10 @@ public class DBManipulator {
 
     public void deleteItem(Integer itemId) {
         try {
-            Statement statement = connection.createStatement();
-            String query = "DELETE FROM data_management.claims WHERE id = " + itemId;
-            statement.executeUpdate(query);
+            CallableStatement statement = connection.prepareCall("{ call deleteItemById(?) }");
+            statement.setInt(1, itemId);
+            statement.execute();
+            statement.close();
             System.out.println("Запись была успешно удалена");
         } catch (SQLException e) {
             System.out.println("Could not clear database");
@@ -168,5 +164,102 @@ public class DBManipulator {
         alert.setHeaderText("Ошибка");
         alert.setContentText("Произошла ошибка при записи в базу данных");
         alert.showAndWait();
+    }
+
+    private void initProcedures() {
+        try {
+            Statement statement = connection.createStatement();
+
+            String createTableProcedure = "create or replace function createItemTable() " +
+                    "    returns int as " +
+                    "$$ " +
+                    "begin " +
+                    "    create table  dm_lab.claims ( " +
+                    "                        id serial NOT NULL PRIMARY KEY, " +
+                    "                        fio VARCHAR(128), " +
+                    "                        sex BOOL DEFAULT FALSE, " +
+                    "                        claim_count INT, " +
+                    "                        role VARCHAR(32)); " +
+                    "    return 1; " +
+                    "end; " +
+                    "$$language plpgsql";
+
+            String dropTableProcedure = "create or replace function dropItemTable() " +
+                    "    returns int as " +
+                    "$$ " +
+                    "begin " +
+                    " " +
+                    "    drop table if exists dm_lab.claims; " +
+                    "    return 1; " +
+                    "end; " +
+                    "$$language plpgsql";
+
+            String cleanTableProcedure = "create or replace function cleanItemTable() " +
+                    "    returns int as " +
+                    "$$ " +
+                    "begin " +
+                    "    truncate table dm_lab.claims; " +
+                    "    return 1; " +
+                    "end; " +
+                    "$$language plpgsql";
+
+            String showAllProcedure = "create or replace function selectAllItems() " +
+                    "    returns table (id int, fio varchar, sex bool, claim_count int, role varchar) " +
+                    "as " +
+                    "$$ " +
+                    "begin " +
+                    "    return query select dm_lab.claims.* from dm_lab.claims; " +
+                    "end " +
+                    "$$ language plpgsql";
+
+            String insertNewItemProcedure = "create or replace function insertNewItem(fio_in varchar(128), sex_in bool, claim_count_in int, role_in varchar(64)) " +
+                    "    returns int as " +
+                    "$$ " +
+                    "declare " +
+                    "    f alias for $1; " +
+                    "    s alias for $2; " +
+                    "    cc alias for $3; " +
+                    "    r alias for $4; " +
+                    "    max_id dm_lab.claims.id%type; " +
+                    "begin " +
+                    "    select max(id) into max_id from dm_lab.claims; " +
+                    "    if(max_id is null) then " +
+                    "        max_id = 0; " +
+                    "    end if; " +
+                    " " +
+                    "    if (r != 'Пользователь' or r != 'Администратор' or r != 'Разработчик' or r != 'Аналитик') then " +
+                    "        raise exception 'ROLE NOT FOUND'; " +
+                    "    end if; " +
+                    " " +
+                    "    insert into dm_lab.claims (id, fio, sex, claim_count, role) values (max_id + 1, f, s, cc, r); " +
+                    "    return 1; " +
+                    "end; " +
+                    "$$language plpgsql";
+
+            String deleteItemProcedure = "create or replace function deleteItemById(user_id int) " +
+                    "    returns int as " +
+                    "$$ " +
+                    "declare " +
+                    "    n alias for $1; " +
+                    "begin " +
+                    "    delete from dm_lab.claims where dm_lab.claims.id = user_id; " +
+                    " " +
+                    "    if not found then " +
+                    "        raise exception 'Записи нет в базе'; " +
+                    "    end if; " +
+                    "    return 1; " +
+                    "end; " +
+                    "$$language plpgsql";
+
+            statement.executeUpdate(createTableProcedure);
+            statement.executeUpdate(dropTableProcedure);
+            statement.executeUpdate(showAllProcedure);
+            statement.executeUpdate(cleanTableProcedure);
+            statement.executeUpdate(insertNewItemProcedure);
+            statement.executeUpdate(deleteItemProcedure);
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
