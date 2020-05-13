@@ -227,7 +227,7 @@ public class DBManipulator {
                     "        max_id = 0; " +
                     "    end if; " +
                     " " +
-                    "    if (r != 'Пользователь' or r != 'Администратор' or r != 'Разработчик' or r != 'Аналитик') then " +
+                    "    if (r not in ('Пользователь', 'Администратор', 'Разработчик', 'Аналитик')) then " +
                     "        raise exception 'ROLE NOT FOUND'; " +
                     "    end if; " +
                     " " +
