@@ -2,24 +2,17 @@ package hse.dm_lab.util;
 
 import hse.dm_lab.model.Item;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class ItemConverter {
 
-    static Item entityFromResultSet(ResultSet resultSet) {
-        try {
-            Item item = new Item();
-            item.setId(resultSet.getInt("id"));
-            item.setFio(resultSet.getString("fio"));
-            item.setSex(resultSet.getBoolean("sex") ? "Мужской" : "Женский");
-            item.setClaimCount(resultSet.getInt("claim_count"));
-            item.setRole(resultSet.getString("role"));
-            return item;
-        } catch (SQLException e) {
-            System.out.println("Ошибка во время извлечения сущности из бд");
-            e.printStackTrace();
-        }
-        return null;
+    static Item entityFromResultSet(String resultSet) {
+        Item item = new Item();
+        String object[] = resultSet.split(",");
+        item.setId(Integer.parseInt(object[0]));
+        item.setFio(object[1].substring(1, object[1].lastIndexOf("\"")));
+        item.setSex(object[2].equals("t") ? "Мужской" : "Женский");
+        item.setClaimCount(Integer.parseInt(object[3]));
+        item.setRole(object[4]);
+        return item;
     }
+    //(1,"dkihg flwij",t,54,Пользователь)
 }

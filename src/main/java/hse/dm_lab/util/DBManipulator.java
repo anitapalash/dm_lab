@@ -22,6 +22,7 @@ public class DBManipulator {
             properties.setProperty("user", id);
             properties.setProperty("password", password);
             connection = DriverManager.getConnection(URl,properties);
+            createTableProcedure();
             initProcedures();
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println("Exception while connecting with MySQL");
@@ -32,8 +33,10 @@ public class DBManipulator {
     public void createDB() {
         try {
             deleteDB();
+            createTableProcedure();
             CallableStatement proc = connection.prepareCall("{ ? = call createItemTable() }");
             proc.execute();
+            initProcedures();
             proc.close();
 
             connection = DriverManager.getConnection(URl,id,password);
@@ -106,9 +109,8 @@ public class DBManipulator {
             List<Item> result = new ArrayList<>();
             CallableStatement proc = connection.prepareCall("{ ? = call selectAllItems() }");
             proc.execute();
-            ResultSet results = proc.getResultSet();
-
-            while (results.next()) {
+            String results = proc.getString(1);
+            if (results != null && !results.trim().isEmpty()) {
                 Item item = ItemConverter.entityFromResultSet(results);
                 result.add(item);
             }
@@ -170,26 +172,11 @@ public class DBManipulator {
         try {
             Statement statement = connection.createStatement();
 
-            String createTableProcedure = "create or replace function createItemTable() " +
-                    "    returns int as " +
-                    "$$ " +
-                    "begin " +
-                    "    create table  dm_lab.claims ( " +
-                    "                        id serial NOT NULL PRIMARY KEY, " +
-                    "                        fio VARCHAR(128), " +
-                    "                        sex BOOL DEFAULT FALSE, " +
-                    "                        claim_count INT, " +
-                    "                        role VARCHAR(32)); " +
-                    "    return 1; " +
-                    "end; " +
-                    "$$language plpgsql";
-
             String dropTableProcedure = "create or replace function dropItemTable() " +
                     "    returns int as " +
                     "$$ " +
                     "begin " +
-                    " " +
-                    "    drop table if exists dm_lab.claims; " +
+                    "    drop table if exists dm_lab.claims cascade; " +
                     "    return 1; " +
                     "end; " +
                     "$$language plpgsql";
@@ -203,13 +190,14 @@ public class DBManipulator {
                     "end; " +
                     "$$language plpgsql";
 
-            String showAllProcedure = "create or replace function selectAllItems() " +
-                    "    returns table (id int, fio varchar, sex bool, claim_count int, role varchar) " +
-                    "as " +
+            String showAllProcedure = "CREATE OR REPLACE FUNCTION selectAllItems() " +
+                    "    RETURNS SETOF dm_lab.claims AS " +
                     "$$ " +
-                    "begin " +
-                    "    return query select dm_lab.claims.* from dm_lab.claims; " +
-                    "end " +
+                    "BEGIN " +
+                    "    return query " +
+                    "        SELECT * " +
+                    "        FROM dm_lab.claims LIMIT 1; " +
+                    "END; " +
                     "$$ language plpgsql";
 
             String insertNewItemProcedure = "create or replace function insertNewItem(fio_in varchar(128), sex_in bool, claim_count_in int, role_in varchar(64)) " +
@@ -251,13 +239,34 @@ public class DBManipulator {
                     "end; " +
                     "$$language plpgsql";
 
-            statement.executeUpdate(createTableProcedure);
             statement.executeUpdate(dropTableProcedure);
             statement.executeUpdate(showAllProcedure);
             statement.executeUpdate(cleanTableProcedure);
             statement.executeUpdate(insertNewItemProcedure);
             statement.executeUpdate(deleteItemProcedure);
             statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createTableProcedure() {
+        try {
+            Statement statement = connection.createStatement();
+            String createTableProcedure = "create or replace function createItemTable() " +
+                    "    returns int as " +
+                    "$$ " +
+                    "begin " +
+                    "    create table  dm_lab.claims ( " +
+                    "                        id serial NOT NULL PRIMARY KEY, " +
+                    "                        fio VARCHAR(128), " +
+                    "                        sex BOOL DEFAULT FALSE, " +
+                    "                        claim_count INT, " +
+                    "                        role VARCHAR(32)); " +
+                    "    return 1; " +
+                    "end; " +
+                    "$$language plpgsql";
+            statement.executeUpdate(createTableProcedure);
         } catch (SQLException e) {
             e.printStackTrace();
         }
