@@ -109,11 +109,8 @@ public class DBManipulator {
             List<Item> result = new ArrayList<>();
             CallableStatement proc = connection.prepareCall("{ ? = call selectAllItems() }");
             proc.execute();
-            String results = proc.getString(1);
-            if (results != null && !results.trim().isEmpty()) {
-                Item item = ItemConverter.entityFromResultSet(results);
-                result.add(item);
-            }
+            ResultSet results = proc.getResultSet();
+            result = ItemConverter.entityFromResultSet(results);
             return result;
         } catch (SQLException e) {
             System.out.println("Ошибка во время выполнения select'a");
