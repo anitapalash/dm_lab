@@ -4,7 +4,6 @@ import hse.dm_lab.model.Item;
 import javafx.scene.control.Alert;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -106,12 +105,10 @@ public class DBManipulator {
 
     public List<Item> showAll() {
         try {
-            List<Item> result = new ArrayList<>();
             CallableStatement proc = connection.prepareCall("{ ? = call selectAllItems() }");
             proc.execute();
             ResultSet results = proc.getResultSet();
-            result = ItemConverter.entityFromResultSet(results);
-            return result;
+            return ItemConverter.entityFromResultSet(results);
         } catch (SQLException e) {
             System.out.println("Ошибка во время выполнения select'a");
             e.printStackTrace();
