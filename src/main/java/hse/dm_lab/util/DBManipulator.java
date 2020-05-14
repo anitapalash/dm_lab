@@ -193,7 +193,7 @@ public class DBManipulator {
                     "BEGIN " +
                     "    return query " +
                     "        SELECT * " +
-                    "        FROM dm_lab.claims LIMIT 1; " +
+                    "        FROM dm_lab.claims; " +
                     "END; " +
                     "$$ language plpgsql";
 
