@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
+import java.util.List;
 
 import static javafx.scene.control.cell.TextFieldTableCell.forTableColumn;
 
@@ -154,7 +155,7 @@ public class MainViewController {
         stage.setScene(scene);
         stage.setTitle("Palashinovich File Database");
         stage.showAndWait();
-        refreshTable();
+        getNewItemsFromMain();
     }
 
     @FXML
@@ -184,5 +185,10 @@ public class MainViewController {
     private void refreshTable() {
         ObservableList<Item> items = FXCollections.observableArrayList(MainApplication.manipulator.showAll());
         mainTable.setItems(items);
+    }
+
+    private void getNewItemsFromMain() {
+        List<Item> newItems = MainApplication.getTempList();
+        mainTable.setItems(FXCollections.observableArrayList(newItems));
     }
 }

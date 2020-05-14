@@ -151,7 +151,7 @@ public class DBManipulator {
 
     public List<Item> selectItems(String fio) {
         try {
-            CallableStatement proc = connection.prepareCall("{ ? = call findItemProcedure(?) }");
+            CallableStatement proc = connection.prepareCall("{ call findItemByFio(?) }");
             proc.setString(1, fio);
             proc.execute();
             ResultSet results = proc.getResultSet();
@@ -243,7 +243,7 @@ public class DBManipulator {
                     "end; " +
                     "$$language plpgsql";
             
-            String findItemProcedure = "create or replace function findItemByFio(varchar(128)) " +
+            String findItemProcedure = "create or replace function findItemByFio(varchar) " +
                     "    returns SETOF dm_lab.claims AS " +
                     "$$ " +
                     "begin " +

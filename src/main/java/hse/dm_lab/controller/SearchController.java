@@ -18,7 +18,7 @@ public class SearchController {
     @FXML
     void searchItems(ActionEvent event) {
         if (fioTextField.getText() != null && !fioTextField.getText().trim().isEmpty()) {
-            MainApplication.manipulator.selectItems(fioTextField.getText());
+            MainApplication.setTempList(MainApplication.manipulator.selectItems(fioTextField.getText()));
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка");
