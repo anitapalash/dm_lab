@@ -4,6 +4,7 @@ import hse.dm_lab.model.Item;
 import javafx.scene.control.Alert;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -148,8 +149,17 @@ public class DBManipulator {
         }
     }
 
-    public void selectItems(Item filterItem) {
-
+    public List<Item> selectItems(String fio) {
+        try {
+            CallableStatement proc = connection.prepareCall("{ ? = call findItemProcedure(?) }");
+            proc.setString(1, fio);
+            proc.execute();
+            ResultSet results = proc.getResultSet();
+            return ItemConverter.entityFromResultSet(results);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     private void writingException(Exception e) {
@@ -232,12 +242,22 @@ public class DBManipulator {
                     "    return 1; " +
                     "end; " +
                     "$$language plpgsql";
+            
+            String findItemProcedure = "create or replace function findItemByFio(varchar(128)) " +
+                    "    returns SETOF dm_lab.claims AS " +
+                    "$$ " +
+                    "begin " +
+                    "    return query " +
+                    "        SELECT * FROM dm_lab.claims where fio like '%' || $1 || '%'; " +
+                    "end; " +
+                    "$$language plpgsql";
 
             statement.executeUpdate(dropTableProcedure);
             statement.executeUpdate(showAllProcedure);
             statement.executeUpdate(cleanTableProcedure);
             statement.executeUpdate(insertNewItemProcedure);
             statement.executeUpdate(deleteItemProcedure);
+            statement.executeUpdate(findItemProcedure);
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
